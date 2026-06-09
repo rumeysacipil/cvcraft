@@ -48,7 +48,7 @@ public class Cv {
     @Column(unique = true)
     private String shareToken;
 
-    @Column(nullable = false)
+    @Column(name = "is_public", nullable = false, columnDefinition = "boolean default false")
     @Builder.Default
     private boolean isPublic = false;
 }
