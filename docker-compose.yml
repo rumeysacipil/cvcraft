@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: cvcraft-postgres
+    environment:
+      POSTGRES_DB: cvcraft
+      POSTGRES_USER: cvcraft
+      POSTGRES_PASSWORD: cvcraft123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cvcraft"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: cvcraft-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/cvcraft
+      DB_USERNAME: cvcraft
+      DB_PASSWORD: cvcraft123
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-at-least-256-bits-long}
+      JWT_EXPIRATION: 86400000
+      JWT_REFRESH_EXPIRATION: 604800000
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      STRIPE_PRICE_MONTHLY: ${STRIPE_PRICE_MONTHLY}
+      STRIPE_PRICE_ONE_TIME: ${STRIPE_PRICE_ONE_TIME}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      FRONTEND_URL: http://localhost:5173
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend
+    container_name: cvcraft-frontend
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://localhost:8080/api
+      VITE_STRIPE_PUBLIC_KEY: ${VITE_STRIPE_PUBLIC_KEY}
+    ports:
+      - "5173:5173"
+
+volumes:
+  postgres_data:
