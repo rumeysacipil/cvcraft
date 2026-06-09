@@ -298,6 +298,18 @@ export default function EditorPage() {
     finally { setSaving(false) }
   }, [id])
 
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (!saved) {
+        saveNow() // fire-and-forget save
+        e.preventDefault()
+        e.returnValue = ''
+      }
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [saved, saveNow])
+
   const triggerSave = () => {
     setSaved(false)
     clearTimeout(saveTimer.current)
@@ -427,11 +439,14 @@ export default function EditorPage() {
     <div style={st.page}>
       {/* Top Bar */}
       <div style={st.topBar}>
-        <div style={{ fontWeight: 900, fontSize: '17px', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => navigate('/dashboard')}>
+        <div style={{ fontWeight: 900, fontSize: '17px', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px' }} onClick={async () => { await saveNow(); navigate('/dashboard') }}>
           <div style={{ width: '28px', height: '28px', background: 'linear-gradient(135deg,#4f46e5,#2563eb)', borderRadius: '7px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '11px', fontWeight: 900 }}>CV</div>
           <span style={{ color: '#1e293b' }}>CV<span style={{ color: '#2563eb' }}>Craft</span></span>
         </div>
         <input style={st.titleInput} value={title} onChange={e => handleTitleChange(e.target.value)} />
+        <button onClick={saveNow} style={{ padding: '6px 12px', borderRadius: '6px', background: '#f8fafc', border: '1px solid #cbd5e1', cursor: 'pointer', fontSize: '11px', fontWeight: 600, color: '#475569' }}>
+          {lang === 'TR' ? 'Kaydet' : 'Save'}
+        </button>
         <span style={st.saveStatus}>{saving ? t.saving : saved ? t.saved : t.unsaved}</span>
         <div style={{ flex: 1 }} />
         <button onClick={toggleLang} style={{ background: '#f8fafc', border: '1.5px solid #e2e8f0', borderRadius: '7px', color: '#475569', cursor: 'pointer', fontSize: '12px', fontWeight: 700, padding: '5px 12px', fontFamily: "'Inter',sans-serif" }}>
@@ -443,7 +458,7 @@ export default function EditorPage() {
           <span style={{ fontSize: '12px', fontWeight: 700, color: scoreColor }}>{score}%</span>
         </div>
         <button onClick={handleDownloadPdf} style={{ ...st.btn('primary'), display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>⬇ {t.downloadPdf}</button>
-        <button onClick={() => navigate('/templates')} style={{ ...st.btn(), fontSize: '11px' }}>{t.templates}</button>
+        <button onClick={async () => { await saveNow(); navigate('/templates') }} style={{ ...st.btn(), fontSize: '11px' }}>{t.templates}</button>
       </div>
 
       <div style={st.main}>

@@ -2,6 +2,14 @@
 
 AI destekli, modern CV oluşturucu. 60+ profesyonel şablon, çoklu dil desteği, ATS uyumluluk analizi ve Stripe ödeme entegrasyonu.
 
+## 📸 Ekran Görüntüleri
+
+Buraya projeye ait ekran görüntülerini ekleyebilirsiniz. `assets` klasörüne resimleri yükledikten sonra isimlerini aşağıdaki gibi güncelleyerek çağırabilirsiniz:
+
+![Dashboard](assets/dashboard.png)
+![CV Düzenleyici](assets/editor.png)
+![Şablonlar](assets/templates.png)
+
 ## 🛠 Tech Stack
 
 | Katman | Teknoloji |

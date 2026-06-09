@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { cvApi } from '../services/api'
-import { CVRenderer } from '../components/cv/CVTemplates'
+import { CVTemplate } from '../components/cv/CVTemplates'
 import './DashboardPage.css' // We can reuse some styles
 import { useLangStore } from '../store/langStore'
 import { translations } from '../i18n/translations'
@@ -71,7 +71,7 @@ export function SharedCvPage() {
       
       <main style={{ flex: 1, padding: '32px 16px', display: 'flex', justifyContent: 'center' }}>
         <div style={{ width: '100%', maxWidth: '800px', background: 'white', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', borderRadius: '8px', overflow: 'hidden' }}>
-          <CVRenderer theme={cv.theme} data={cv.data || {}} lang={lang} />
+          <CVTemplate templateId={cv.theme} data={cv.data || {}} />
         </div>
       </main>
     </div>
